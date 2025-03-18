@@ -5,7 +5,10 @@ const MessageSchema = new mongoose.Schema(
     content: {
       type: String,
     },
-    sub: {
+    user_sub: {
+      type: String,
+    },
+    selected_user_sub: {
       type: String,
     },
     picture: {
