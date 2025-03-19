@@ -1,22 +1,22 @@
 import { Message } from "../models/messages.js";
 
-export async function fetchMessages(roomName) {
-  const req1 = await Message.find({
+export async function fetchMessages(req, res, next) {
+  const { selected_user } = req.query;
+
+  const response = await Message.find({
     $or: [
       {
-        selected_user_sub: roomName.selected_user,
+        selected_user_sub: selected_user,
       },
       {
-        user_sub: roomName.selected_user,
+        user_sub: selected_user,
       },
     ],
   }).exec();
+  
+  console.log(response);  
 
-  //   console.log(roomName);
-
-  console.log(req1.length);
-
-  return req1;
+  res.status(200).send(response);
 }
 
 export async function saveMessage(message) {
