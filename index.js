@@ -3,7 +3,8 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import { db } from "./database/mongoose.js";
-import { fetchMessages, saveMessage } from "./controllers/messages.js";
+import { fetchMessages, saveMessage } from "./controllers/message.js";
+import { ConnectedUser, DisconnectedUser } from "./controllers/user.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -21,29 +22,35 @@ app.use(
   })
 );
 
-app.get('/messages', async (req, res) => {
+app.get("/messages", async (req, res) => {
   await fetchMessages(req, res);
 });
 
 io.on("connection", (socket) => {
   socket.on("joinRoom", async (roomName) => {
     socket.join("connect_chat");
-
-    // socket.to("connect_chat").emit("recentMsg", await fetchMessages(roomName));
   });
 
   socket.on("sendMsg", async (message) => {
     const now = new Date();
-    const timeString = now.toLocaleTimeString();
-    message.time = timeString;
+    const currentTime = now.toLocaleTimeString();
+    message.time = currentTime;
 
-    console.log("selecting...");
     socket.to("connect_chat").emit("recieveMsg", message);
 
     await saveMessage(message);
-    socket.on("disconnect", () => {
-      console.log(`User ${socket.id} is disconnected`);
+  });
+
+  socket.on("isDisconnected", (email) => {
+    socket.on("disconnect", async () => {
+      await DisconnectedUser(email);
     });
+  });
+
+  // console.log('doo');
+
+  socket.on("isConnected", async (email) => {
+    await ConnectedUser(email);
   });
 });
 

@@ -1,4 +1,4 @@
-import { Message } from "../models/messages.js";
+import { Message } from "../models/messageModel.js";
 
 export async function fetchMessages(req, res, next) {
   const { selected_user } = req.query;
@@ -14,8 +14,6 @@ export async function fetchMessages(req, res, next) {
     ],
   }).exec();
   
-  console.log(response);  
-
   res.status(200).send(response);
 }
 
