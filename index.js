@@ -43,11 +43,10 @@ io.on("connection", (socket) => {
 
   socket.on("isDisconnected", (email) => {
     socket.on("disconnect", async () => {
+      // console.log('disconnected');
       await DisconnectedUser(email);
     });
   });
-
-  // console.log('doo');
 
   socket.on("isConnected", async (email) => {
     await ConnectedUser(email);
