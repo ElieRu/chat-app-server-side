@@ -9,12 +9,9 @@ export async function DisconnectedUser(email) {
       status: currentTime(),
     })
     .exec();
-
-  //   console.log(response);
 }
 
 export async function ConnectedUser(email) {
-  console.log("conneted");
   const response = await User.findOne({
     email: email,
   })
