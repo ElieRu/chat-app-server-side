@@ -2,9 +2,10 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import { db } from "./database/mongoose.js";
-import { fetchMessages, saveMessage } from "./controllers/message.js";
-import { ConnectedUser, DisconnectedUser } from "./controllers/user.js";
+import { db } from "./src/database/mongoose.js";
+import { fetchMessages, saveMessage } from "./src/controllers/message.js";
+import { ConnectedUser, DisconnectedUser } from "./src/controllers/user.js";
+import { currentTime } from "./util.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -32,18 +33,19 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMsg", async (message) => {
-    const now = new Date();
-    const currentTime = now.toLocaleTimeString();
-    message.time = currentTime;
-
-    socket.to("connect_chat").emit("recieveMsg", message);
+    message.time = currentTime();
 
     await saveMessage(message);
+
+    socket.to("connect_chat").emit("recieveMsg", message);
+    socket.to("connect_chat").emit("updateUsersDatas", {
+      last_message: message.content,
+      selected_user: message.selected_user_sub
+    });
   });
 
   socket.on("isDisconnected", (email) => {
     socket.on("disconnect", async () => {
-      // console.log('disconnected');
       await DisconnectedUser(email);
     });
   });
