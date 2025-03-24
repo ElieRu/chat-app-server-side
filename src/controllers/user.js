@@ -1,5 +1,5 @@
 import { User } from "../models/userModel.js";
-import { currentTime } from "../util.js";
+import { currentTime } from "../../util.js";
 
 export async function DisconnectedUser(email) {
   const response = await User.findOne({
@@ -16,7 +16,7 @@ export async function ConnectedUser(email) {
     email: email,
   })
     .updateOne({
-      status: "Online",
+      status: "online",
     })
     .exec();
   //   console.log(email);
