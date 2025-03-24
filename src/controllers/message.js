@@ -32,4 +32,22 @@ export async function saveMessage(message) {
     .exec();
 
   await myMessage.save();
+
+  const LastMessage = await Message.find({
+    $or: [
+      {
+        selected_user_sub: message.selected_user_sub,
+        user_sub: message.user_sub,
+      },
+      {
+        selected_user_sub: message.user_sub,
+        user_sub: message.selected_user_sub,
+      },
+    ],
+  })
+    .sort({ _id: -1 })
+    .limit(1)
+    .exec();
+
+  return LastMessage[0];
 }

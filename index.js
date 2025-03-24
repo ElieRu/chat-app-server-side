@@ -35,13 +35,11 @@ io.on("connection", (socket) => {
   socket.on("sendMsg", async (message) => {
     message.time = currentTime();
 
-    await saveMessage(message);
+    const LastMessage = await saveMessage(message);
+    // console.log(LastMessage);
 
     socket.to("connect_chat").emit("recieveMsg", message);
-    socket.to("connect_chat").emit("updateUsersDatas", {
-      last_message: message.content,
-      selected_user: message.selected_user_sub
-    });
+    socket.to("connect_chat").emit("updateUsersDatas", LastMessage);
   });
 
   socket.on("isDisconnected", (email) => {
