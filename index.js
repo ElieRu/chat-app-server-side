@@ -6,6 +6,7 @@ import { db } from "./src/database/mongoose.js";
 import { fetchMessages, saveMessage } from "./src/controllers/message.js";
 import { ConnectedUser, DisconnectedUser } from "./src/controllers/user.js";
 import { currentTime } from "./util.js";
+import mongoose from "mongoose";
 
 const app = express();
 const httpServer = createServer(app);
@@ -28,17 +29,14 @@ app.get("/messages", async (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("joinRoom", async (roomName) => {
+  socket.on("joinRoom", () => {
     socket.join("connect_chat");
   });
 
   socket.on("sendMsg", async (message) => {
-    message.time = currentTime();
-
     const LastMessage = await saveMessage(message);
-    // console.log(LastMessage);
-
-    socket.to("connect_chat").emit("recieveMsg", message);
+    
+    socket.to("connect_chat").emit("recieveMsg", LastMessage);
     socket.to("connect_chat").emit("updateUsersDatas", LastMessage);
   });
 
@@ -52,5 +50,6 @@ io.on("connection", (socket) => {
     await ConnectedUser(email);
   });
 });
+
 
 httpServer.listen(3001);
