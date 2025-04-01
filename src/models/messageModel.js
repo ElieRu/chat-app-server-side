@@ -5,17 +5,11 @@ const MessageSchema = new mongoose.Schema(
     content: {
       type: String,
     },
-    user_sub: {
-      type: String,
+    userId: {
+      type: Schema.Types.ObjectId,
     },
-    selected_user_sub: {
-      type: String,
-    },
-    picture: {
-      type: String,
-    },
-    time: {
-      type: String,
+    recieverId: {
+      type: Schema.Types.ObjectId,
     },
   },
   {
