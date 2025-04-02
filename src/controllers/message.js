@@ -4,37 +4,20 @@ import { User } from "../models/userModel.js";
 import mongoose from "mongoose";
 
 export async function fetchMessages(req, res, next) {
-  const { recieveId, userId } = req.query;
+  const { recieverId, userId } = req.query;
 
-  console.log({recieveId, userId});
-
-  const query = [
-    {
-      '$match': {
-        'recieverId': new ObjectId('67eaad8262d1abe6dcc8909f')
-      }
-    }
-  ];
-
-  const response = await Message.$where(
-    // query
-    {
-    recieveId: recieveId,
-    // userId: userId
-    // $or: [
-      // {
-        // recieveId: recieveId,
-        // userId: userId,
-    //   },
-    //   {
-    //     recieveId: userId,
-    //     userId: recieveId,
+  const response = await Message.find({
+    $or: [
+      {
+        recieverId: recieverId,
+        userId: userId,
       },
-    // ],
-  // }
-).exec();
-
-  console.log(response);
+      {
+        recieverId: userId,
+        userId: recieverId,
+      },
+    ],
+  }).exec();
 
   res.status(200).send(response);
 }
@@ -51,21 +34,21 @@ export async function saveMessage(message) {
   //   .exec();
   await myMessage.save();
 
-  // const LastMessage = await Message.find({
-  //   $or: [
-  //     {
-  //       selected_user_sub: message.selected_user_sub,
-  //       user_sub: message.user_sub,
-  //     },
-  //     {
-  //       selected_user_sub: message.user_sub,
-  //       user_sub: message.selected_user_sub,
-  //     },
-  //   ],
-  // })
-  //   .sort({ _id: -1 })
-  //   .limit(1)
-  //   .exec();
+  const LastMessage = await Message.find({
+    $or: [
+      {
+        recieverId: message.recieverId,
+        userId: message.userId,
+      },
+      {
+        recieverId: message.userId,
+        userId: message.recieverId,
+      },
+    ],
+  })
+    .sort({ _id: -1 })
+    .limit(1)
+    .exec();
 
-  // return LastMessage[0];
+  return LastMessage[0];
 }
