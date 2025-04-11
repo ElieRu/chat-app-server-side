@@ -1,7 +1,4 @@
-import { isObjectIdOrHexString } from "mongoose";
 import { Message } from "../models/messageModel.js";
-import { User } from "../models/userModel.js";
-import mongoose from "mongoose";
 
 export async function fetchMessages(req, res, next) {
   const { recieverId, userId } = req.query;
