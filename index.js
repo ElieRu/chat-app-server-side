@@ -34,6 +34,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMsg", async (message) => {
+    message.seen = false;
     const LastMessage = await saveMessage(message);
 
     socket.to("connect_chat").emit("recieveMsg", LastMessage);
