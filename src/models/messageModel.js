@@ -5,12 +5,16 @@ const MessageSchema = new mongoose.Schema(
     content: {
       type: String,
     },
+    seen: {
+      type: Boolean,
+    },
     userId: {
       type: Schema.Types.ObjectId,
     },
     recieverId: {
       type: Schema.Types.ObjectId,
     },
+    
   },
   {
     timestamps: true,
