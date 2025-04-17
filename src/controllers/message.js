@@ -21,14 +21,6 @@ export async function fetchMessages(req, res, next) {
 
 export async function saveMessage(message) {
   const myMessage = new Message(message);
-
-  // await User.findOne({
-  //   sub: message.selected_user_sub,
-  // })
-  //   .updateOne({
-  //     last_message: message.content,
-  //   })
-  //   .exec();
   await myMessage.save();
 
   const LastMessage = await Message.find({
@@ -48,4 +40,9 @@ export async function saveMessage(message) {
     .exec();
 
   return LastMessage[0];
+}
+
+export async function updateSeenMessage(messages) {
+  console.log(messages);
+  await Message.updateMany({ seen: false }, { $set: { seen: true }});
 }

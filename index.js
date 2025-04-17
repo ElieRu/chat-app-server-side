@@ -3,10 +3,9 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import { db } from "./src/database/mongoose.js";
-import { fetchMessages, saveMessage } from "./src/controllers/message.js";
+import { fetchMessages, saveMessage, updateSeenMessage } from "./src/controllers/message.js";
 import { ConnectedUser, DisconnectedUser } from "./src/controllers/user.js";
-import { currentTime } from "./util.js";
-import mongoose from "mongoose";
+
 
 const app = express();
 const httpServer = createServer(app);
@@ -39,6 +38,10 @@ io.on("connection", (socket) => {
 
     socket.to("connect_chat").emit("recieveMsg", LastMessage);
     socket.to("connect_chat").emit("updateUsersDatas", LastMessage);
+  });
+
+  socket.on("updateUnreadedMsg", async (messages) => {
+    await updateSeenMessage(messages);
   });
 
   socket.on("isDisconnected", (email) => {
