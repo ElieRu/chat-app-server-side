@@ -42,7 +42,22 @@ export async function saveMessage(message) {
   return LastMessage[0];
 }
 
-export async function updateSeenMessage(messages) {
-  console.log(messages);
-  await Message.updateMany({ seen: false }, { $set: { seen: true }});
+export async function updateSeenMessage(messages, userId, recieverId) {
+  await Message.updateMany(
+    {
+      $or: [
+        {
+          recieverId: recieverId,
+          userId: userId,
+        },
+        {
+          recieverId: userId,
+          userId: recieverId,
+        },
+      ],
+      seen: false,
+    },
+    { $set: { seen: true } }
+  );
+  console.log("updated...");
 }
