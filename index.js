@@ -3,9 +3,12 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import { db } from "./src/database/mongoose.js";
-import { fetchMessages, saveMessage, updateSeenMessage } from "./src/controllers/message.js";
+import {
+  fetchMessages,
+  saveMessage,
+  updateSeenMessage,
+} from "./src/controllers/message.js";
 import { ConnectedUser, DisconnectedUser } from "./src/controllers/user.js";
-
 
 const app = express();
 const httpServer = createServer(app);
@@ -41,7 +44,15 @@ io.on("connection", (socket) => {
   });
 
   socket.on("updateUnreadedMsg", async (messages) => {
-    await updateSeenMessage(messages);
+    if (messages.length > 0) {
+      const last_msg = messages.slice(-1)[0];
+      const { userId, recieverId } = last_msg;
+
+      console.log(last_msg);      
+
+      await updateSeenMessage(messages, userId, recieverId);
+      socket.to("connect_chat").emit("emptyMsgUnreaded", last_msg);
+    }
   });
 
   socket.on("isDisconnected", (email) => {
@@ -54,6 +65,5 @@ io.on("connection", (socket) => {
     await ConnectedUser(email);
   });
 });
-
 
 httpServer.listen(3001);
